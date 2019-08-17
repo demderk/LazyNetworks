@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.62
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyNetworks", "LazyNetworks\LazyNetworks.csproj", "{753B2609-D4B1-4331-8B85-12039ECBB589}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{6BEF6476-BE2D-4875-B1E1-C7D562208CB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{7FED906D-FB5B-46E1-BE9E-5FF980B92804}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{753B2609-D4B1-4331-8B85-12039ECBB589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{753B2609-D4B1-4331-8B85-12039ECBB589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{753B2609-D4B1-4331-8B85-12039ECBB589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{753B2609-D4B1-4331-8B85-12039ECBB589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BEF6476-BE2D-4875-B1E1-C7D562208CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BEF6476-BE2D-4875-B1E1-C7D562208CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BEF6476-BE2D-4875-B1E1-C7D562208CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BEF6476-BE2D-4875-B1E1-C7D562208CB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FED906D-FB5B-46E1-BE9E-5FF980B92804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FED906D-FB5B-46E1-BE9E-5FF980B92804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FED906D-FB5B-46E1-BE9E-5FF980B92804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FED906D-FB5B-46E1-BE9E-5FF980B92804}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33B9DDD8-DBCB-40A9-9CA2-6A8B0BF5C23A}
+	EndGlobalSection
+EndGlobal
