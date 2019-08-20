@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AdvancedTCP
 {
-    static class TCPExtentions
+    static class AdvancedTCPExtentions
     {
         public static IPEndPoint ParseIPEndPoint(string endPoint)
         {
@@ -33,6 +33,23 @@ namespace AdvancedTCP
                 throw new FormatException("Invalid port");
             }
             return new IPEndPoint(ip, port);
+        }
+
+        public static byte[] BuildXMLQuerry(string text)
+        {
+            bool extended = text.Length > 255 ? true : false;
+            List<byte> bytes = new List<byte>
+            {
+                0x0081,
+                0x0001,
+                0x0084
+            };
+            bytes.AddRange(Encoding.Unicode.GetBytes(text));
+            if (extended)
+            {
+                bytes.Add(0x0003);
+            }
+            return bytes.ToArray();
         }
     }
 }

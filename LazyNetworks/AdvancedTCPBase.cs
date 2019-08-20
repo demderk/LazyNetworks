@@ -30,21 +30,6 @@ namespace AdvancedTCP
             }
         }
 
-        private byte[] BuildXMLQuerry(string text)
-        {
-            bool extended = text.Length > 255 ? true : false;
-            List<byte> bytes = new List<byte>();
-            bytes.Add(0x0081);
-            bytes.Add(0x0001);
-            bytes.Add(0x0084);
-            bytes.AddRange(Encoding.Unicode.GetBytes(text));
-            if (extended)
-            {
-                bytes.Add(0x0003);
-            }
-            return bytes.ToArray();
-        }
-
         public string GetObjectXMLString<T>(T toSerialize)
         {
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
@@ -82,38 +67,84 @@ namespace AdvancedTCP
 
         protected virtual void MessageAvailable(Client client)
         {
-            IMessageBase<object> message = null;
-            byte[] bytes = new byte[3];
-            if (client.ClientStream.Read(bytes, 0, 3) < 3)
+            IMessageBase<object> message = GetByteMessage(client, ReadBytesRube(client.ClientStream));
+            if (message != null)
             {
-                message = new NetworkByteMessage(client, bytes) { Unknown = true };
+                MessageArrived?.Invoke(message);
+            }
+        }
+
+        private IMessageBase<object> GetByteMessage(Client client, byte[] allBytes)
+        {
+            if (allBytes.Length < 3)
+            {
+                return new NetworkByteMessage(client, allBytes) { Unknown = true };
             }
             else
             {
-                if ((bytes[0] == 0x0081 && bytes[2] == 0x0084))
+                byte[] messageBytes = new byte[allBytes.Length - 3];
+                Array.Copy(allBytes, 3, messageBytes, 0, allBytes.Length - 3);
+                if ((allBytes[0] == 0x0081 && allBytes[2] == 0x0084))
                 {
-                    switch ((MessageDataType)bytes[1])
+                    switch ((MessageDataType)allBytes[1])
                     {
                         case MessageDataType.XMLDocument:
-                            byte[] rawBytes = ReadBytesRube(client.ClientStream);
-                            List<byte> messageBytes = new List<byte>();
+                            List<byte> messageBytesXml = new List<byte>();
                             string messageText = null;
-                            if (rawBytes.Length > 1)
+                            if (messageBytes.Length > 1)
                             {
-                                for (int ia = 0; ia < rawBytes.Length; ia++)
+                                for (int ia = 0; ia < messageBytes.Length; ia++)
                                 {
-                                    if (rawBytes[ia] != 0x0003)
+                                    if (messageBytes[ia] != 0x0003)
                                     {
-                                        messageBytes.Add(rawBytes[ia]);
+                                        messageBytesXml.Add(messageBytes[ia]);
                                     }
                                     else
                                     {
+                                        //TODO: multiple data
                                         break;
                                     }
                                 }
-                                messageText = Encoding.Unicode.GetString(messageBytes.ToArray());
+                                messageText = Encoding.Unicode.GetString(messageBytesXml.ToArray());
                             }
-                            message = new NetworkXMLMessage(client, messageText);
+                            return new NetworkXMLMessage(client, messageText);
+                        case MessageDataType.Question:
+                            List<byte> messageBytesQs = new List<byte>();
+                            if (messageBytes[0] == 0x0081 && messageBytes[6] == 0x0084)
+                            {
+                                byte[] questionBytes = new byte[4];
+                                Array.Copy(messageBytes, 1, questionBytes, 0, 4);
+                                int questionCode = BitConverter.ToInt32(questionBytes, 0);
+                                bool questionAnswer = BitConverter.ToBoolean(messageBytes, 5);
+                                byte[] clearMessageQs = new byte[messageBytes.Length - 7];
+                                Array.Copy(messageBytes, 7, clearMessageQs, 0, messageBytes.Length - 7);
+                                messageBytesQs.AddRange(clearMessageQs);
+                                if (questionAnswer)
+                                {
+                                    lock (client.QuestionsArrayLock)
+                                    {
+                                        if (client.QuestionsArray.ContainsKey(questionCode))
+                                        {
+                                            client.QuestionsArray[questionCode] = GetByteMessage(client, clearMessageQs);
+                                        }
+                                        else
+                                        {
+                                            return null;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    IMessageBase<object> child = GetByteMessage(client, clearMessageQs);
+                                    child.Question = new MessageQuestion(client) { IsAnswer = false, QuestionCode = questionCode };
+                                    return child;
+                                }
+                            }
+                            else
+                            {
+                                return null;
+                            }
+
                             break;
                         default:
                             break;
@@ -121,28 +152,10 @@ namespace AdvancedTCP
                 }
                 else
                 {
-                    message = new NetworkByteMessage(client, ReadBytesRube(client.ClientStream)) { Unknown = true };
+                    return new NetworkByteMessage(client, allBytes) { Unknown = true };
                 }
             }
-            MessageArrived?.Invoke(message);
-        }
-
-        public virtual void Send(Client client, string message)
-        {
-            XElement node = new XElement("String", message);
-            Send(client, BuildXMLQuerry(node.ToString()));
-        }
-
-        public void Send(Client client, byte[] message)
-        {
-            if (client != null)
-            {
-                ((Stream)client.ClientStream).Write(message,0,message.Length);
-            }
-            else
-            {
-                throw new InvalidOperationException("Connection not installed");
-            }
+            return null;
         }
 
         protected bool SocketConnected(Socket s)
@@ -155,5 +168,6 @@ namespace AdvancedTCP
             else
                 return true;
         }
+
     }
 }

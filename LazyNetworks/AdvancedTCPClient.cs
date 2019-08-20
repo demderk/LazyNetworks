@@ -73,7 +73,7 @@ namespace AdvancedTCP
 
         public void Connect(string ip)
         {
-            Connect(TCPExtentions.ParseIPEndPoint(ip));
+            Connect(AdvancedTCPExtentions.ParseIPEndPoint(ip));
         }
 
         public bool TryConnect(IPEndPoint ip)
@@ -91,17 +91,7 @@ namespace AdvancedTCP
 
         public bool TryConnect(string ip)
         {
-            return TryConnect(TCPExtentions.ParseIPEndPoint(ip));
-        }
-
-        public void Send(string message)
-        {
-            base.Send(Client, message);
-        }
-
-        public void Send(byte[] message)
-        {
-            base.Send(Client, message);
+            return TryConnect(AdvancedTCPExtentions.ParseIPEndPoint(ip));
         }
     }
 }

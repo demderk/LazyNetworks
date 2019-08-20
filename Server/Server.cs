@@ -6,9 +6,9 @@ namespace ServerApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static readonly AdvancedTCPServer server = new AdvancedTCPServer(new IPEndPoint(IPAddress.Parse("192.168.31.74"), 10201));
+        static void Main()
         {
-            AdvancedTCPServer server = new AdvancedTCPServer(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 10201));
             server.MessageArrived += MessageArrived;
             server.ClientConnected += ClientConnected;
             server.ClientDisconnected += ClientDisconnected;
@@ -24,7 +24,7 @@ namespace ServerApp
                         Console.ReadKey();
                         return;
                     default:
-                        server.Send(server.GetClients("127.0.0.1")[0], cin);
+                        server.SendAll(cin);
                         break;
                 }
             }
@@ -43,13 +43,16 @@ namespace ServerApp
         private static void MessageArrived(IMessageBase<object> message)
         {
             Console.Write($"[{message.RemoteClient.TcpClient.Client.RemoteEndPoint}] > ");
-            switch (message)
+            if (message.Question != null && message.Question.IsAnswer == false)
             {
-                case NetworkXMLMessage msgXml:
-                    Console.WriteLine(msgXml.MessageBody.InnerText);
-                    break;
-                default:
-                    break;
+                switch (message)
+                {
+                    case NetworkXMLMessage xmlMsg:
+                        message.Question.Answer($"<string>[SERVER MIRROR > ] {xmlMsg}</string>");
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }

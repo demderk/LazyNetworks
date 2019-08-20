@@ -62,7 +62,7 @@ namespace AdvancedTCP
         {
             while (!ServerStop.Token.IsCancellationRequested)
             {
-                TcpClient newClient = null;
+                TcpClient newClient;
                 try
                 {
                     newClient = await TcpServer.AcceptTcpClientAsync();
@@ -145,7 +145,7 @@ namespace AdvancedTCP
 
         public Client GetClient(string endPoint)
         {
-            return GetClient(TCPExtentions.ParseIPEndPoint(endPoint));
+            return GetClient(AdvancedTCPExtentions.ParseIPEndPoint(endPoint));
         }
 
         public Client GetClient(IPEndPoint ipPoint)
@@ -162,6 +162,28 @@ namespace AdvancedTCP
         {
             IPAddress ipAddress = IPAddress.Parse(ip);
             return GetClients(ipAddress);
+        }
+
+        public void SendAll(byte[] message)
+        {
+            lock (ClientsLockObj)
+            {
+                for (int i = 0; i < Clients.Count; i++)
+                {
+                    Clients[0].Send(message);
+                }
+            }
+        }
+
+        public void SendAll(string message)
+        {
+            lock (ClientsLockObj)
+            {
+                for (int i = 0; i < Clients.Count; i++)
+                {
+                    Clients[0].Send(message);
+                }
+            }
         }
 
     }

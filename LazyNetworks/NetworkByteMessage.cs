@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AdvancedTCP
 {
-    class NetworkByteMessage : IMessageBase<byte[]>
+    public sealed class NetworkByteMessage : IMessageBase<byte[]>
     {
         public NetworkByteMessage(Client remoteClient, byte[] messageBody)
         {
@@ -17,5 +17,7 @@ namespace AdvancedTCP
         public Client RemoteClient { get; }
 
         public bool Unknown { get; set; }
+
+        public MessageQuestion Question { get; set; }
     }
 }

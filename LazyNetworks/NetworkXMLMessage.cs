@@ -6,11 +6,9 @@ namespace AdvancedTCP
     {
 
 
-        public NetworkXMLMessage(Client remoteClient, string messageName, XmlDocument xml)
+        public NetworkXMLMessage(Client remoteClient, XmlDocument xml, string messageName) : this(remoteClient, xml)
         {
-            RemoteClient = remoteClient;
             MessageName = messageName;
-            MessageBody = xml;
         }
 
         public NetworkXMLMessage(Client remoteClient, XmlDocument messageBody)
@@ -32,7 +30,6 @@ namespace AdvancedTCP
             }
             catch (XmlException ex)
             {
-
                 throw ex;
             }
         }
@@ -42,6 +39,8 @@ namespace AdvancedTCP
         public XmlNode MessageBody { get; }
 
         public Client RemoteClient { get; }
+
+        public MessageQuestion Question { get; set; }
 
         public override string ToString()
         {
