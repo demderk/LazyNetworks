@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using LazyNetworks;
 
 namespace AdvancedTCP
 {
@@ -76,6 +77,7 @@ namespace AdvancedTCP
 
         private IMessageBase<object> GetByteMessage(Client client, byte[] allBytes)
         {
+            // TODO: Do 8 byte - per message fixed size, not 3-6
             if (allBytes.Length < 3)
             {
                 return new NetworkByteMessage(client, allBytes) { Unknown = true };
@@ -84,7 +86,8 @@ namespace AdvancedTCP
             {
                 byte[] messageBytes = new byte[allBytes.Length - 3];
                 Array.Copy(allBytes, 3, messageBytes, 0, allBytes.Length - 3);
-                if ((allBytes[0] == 0x0081 && allBytes[2] == 0x0084))
+                if (((EnvironmentalVariables)allBytes[0] == EnvironmentalVariables.StartSymbol &&
+                    (EnvironmentalVariables)allBytes[2] == EnvironmentalVariables.EndSymbol))
                 {
                     switch ((MessageDataType)allBytes[1])
                     {
@@ -110,7 +113,8 @@ namespace AdvancedTCP
                             return new NetworkXMLMessage(client, messageText);
                         case MessageDataType.Question:
                             List<byte> messageBytesQs = new List<byte>();
-                            if (messageBytes[0] == 0x0081 && messageBytes[6] == 0x0084)
+                            if ((EnvironmentalVariables)messageBytes[0] == EnvironmentalVariables.StartSymbol &&
+                                (EnvironmentalVariables)messageBytes[6] == EnvironmentalVariables.EndSymbol)
                             {
                                 byte[] questionBytes = new byte[4];
                                 Array.Copy(messageBytes, 1, questionBytes, 0, 4);

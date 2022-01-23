@@ -6,11 +6,11 @@ namespace ServerApp
 {
     class Program
     {
-        static readonly AdvancedTCPServer server = new AdvancedTCPServer(new IPEndPoint(IPAddress.Parse("192.168.31.74"), 10201));
+        static readonly AdvancedTCPServer server = new AdvancedTCPServer(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 10201));
         static void Main()
         {
             server.MessageArrived += MessageArrived;
-            server.ClientConnected += ClientConnected;
+            server.ClientConnecting += ClientConnecting;
             server.ClientDisconnected += ClientDisconnected;
             while (true)
             {
@@ -20,7 +20,7 @@ namespace ServerApp
                 {
                     case "s/stop":
                         server.Stop();
-                        Console.WriteLine("Server stopped. Press any key to contunue.");
+                        Console.WriteLine("Server has been stopped. Press any key to contunue.");
                         Console.ReadKey();
                         return;
                     default:
@@ -32,10 +32,10 @@ namespace ServerApp
 
         private static void ClientDisconnected(Client client)
         {
-            Console.WriteLine($"[{client.TcpClient.Client.RemoteEndPoint}] Client disconnected.");
+            Console.WriteLine($"[{client.Adress}] Client disconnected.");
         }
 
-        private static void ClientConnected(System.Net.Sockets.TcpClient client, System.ComponentModel.CancelEventArgs e)
+        private static void ClientConnecting(System.Net.Sockets.TcpClient client, System.ComponentModel.CancelEventArgs e)
         {
             Console.WriteLine($"[{client.Client.RemoteEndPoint}] Client connected.");
         }

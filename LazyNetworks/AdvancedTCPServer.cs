@@ -35,7 +35,7 @@ namespace AdvancedTCP
             Start();
         }
 
-        public event ConnectedClientEventHandler ClientConnected;
+        public event ConnectedClientEventHandler ClientConnecting;
 
         public event DisconnectedClientEventHandler ClientDisconnected;
 
@@ -65,6 +65,7 @@ namespace AdvancedTCP
                 TcpClient newClient;
                 try
                 {
+                    //TODO: ISSUE: "Operation canceled" => lock or socketexception check
                     newClient = await TcpServer.AcceptTcpClientAsync();
                 }
                 catch (ObjectDisposedException)
@@ -75,11 +76,11 @@ namespace AdvancedTCP
                     }
                     else
                     {
-                        continue;
+                        throw;
                     }
                 }
                 CancelEventArgs cancel = new CancelEventArgs();
-                ClientConnected?.Invoke(newClient, cancel);
+                ClientConnecting?.Invoke(newClient, cancel);
                 if (cancel.Cancel)
                 {
                     newClient.Close();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LazyNetworks;
 
 namespace AdvancedTCP
 {
@@ -22,14 +23,14 @@ namespace AdvancedTCP
             byte[] questionCodeBytes = BitConverter.GetBytes(QuestionCode);
             List<byte> messageBytes = new List<byte>()
                 {
-                    0x0081,
-                    0x0002,
-                    0x0084,
-                    0x0081
+                    (byte)EnvironmentalVariables.StartSymbol,
+                    (byte)MessageDataType.Question,
+                    (byte)EnvironmentalVariables.EndSymbol,
+                    (byte)EnvironmentalVariables.StartSymbol
                 };
             messageBytes.AddRange(questionCodeBytes);
-            messageBytes.Add(1);
-            messageBytes.Add(0x0084);
+            messageBytes.Add(1); // IsAnswer (IsAnswer ? 1 : 0)
+            messageBytes.Add((byte)EnvironmentalVariables.EndSymbol);
             messageBytes.AddRange(message);
             Client.Send(messageBytes.ToArray());
         }

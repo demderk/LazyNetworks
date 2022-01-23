@@ -17,7 +17,8 @@ namespace AdvancedTCP
     {
         Bytes = 0x0000,
         XMLDocument = 0x0001,
-        Question = 0x0002
+        Question = 0x0002,
+        Text = 0x0004
     }
 
 }

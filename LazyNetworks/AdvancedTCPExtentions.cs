@@ -41,7 +41,7 @@ namespace AdvancedTCP
             List<byte> bytes = new List<byte>
             {
                 0x0081,
-                0x0001,
+                (byte)MessageDataType.XMLDocument,
                 0x0084
             };
             bytes.AddRange(Encoding.Unicode.GetBytes(text));

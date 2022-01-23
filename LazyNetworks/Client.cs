@@ -15,10 +15,14 @@ namespace AdvancedTCP
         public Client(TcpClient client)
         {
             TcpClient = client;
+            Adress = client.Client.RemoteEndPoint.ToString();
             ClientStream = client.GetStream();
         }
 
+
         public TcpClient TcpClient { get; }
+
+        public string Adress { get; set; } = null;
 
         public IPEndPoint RemoteIP => (IPEndPoint)TcpClient.Client.RemoteEndPoint;
 
@@ -44,7 +48,7 @@ namespace AdvancedTCP
             }
             else
             {
-                throw new InvalidOperationException("Connection not installed");
+                throw new InvalidOperationException("Connection was not established");
             }
         }
 
@@ -60,10 +64,18 @@ namespace AdvancedTCP
                 QuestionsArray.Add(questionCode, null);
             }
             byte[] questionCodeBytes = BitConverter.GetBytes(questionCode);
+            // *----- QUESTION ------------------------*
+            //  0x0081 - block start symbol,
+            //  Message Type
+            //  0x0084 - block end symbol
+            //  QuestionID(1 byte)
+            //  IsAnswer (IsAnswer ? 0x0000 : 0x0001 )
+            //  0x0084 - block end symbol
+            // *----- QUESTION ------------------------*
             List<byte> messageBytes = new List<byte>()
                 {
                     0x0081,
-                    0x0002,
+                    (byte)MessageDataType.Question,
                     0x0084,
                     0x0081
                 };

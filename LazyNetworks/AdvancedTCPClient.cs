@@ -17,7 +17,7 @@ namespace AdvancedTCP
     public class AdvancedTCPClient : AdvancedTCPBase
     {
 
-        public Client Client { get; private set; }
+        private Client Client { get; set; }
 
         public AdvancedTCPClient()
         {
@@ -92,6 +92,36 @@ namespace AdvancedTCP
         public bool TryConnect(string ip)
         {
             return TryConnect(AdvancedTCPExtentions.ParseIPEndPoint(ip));
+        }
+
+        public void Send(string message)
+        {
+            Client.Send(message);
+        }
+
+        public void Send(byte[] message)
+        {
+            Client.Send(message);
+        }
+
+        public IMessageBase<object> SendQuestion(byte[] message, double timeout = 300)
+        {
+            return Client.SendQuestion(message, timeout);
+        }
+
+        public void SendQuestion(byte[] message, Action<IMessageBase<object>> callback, double timeout = 300)
+        {
+            Client.SendQuestion(message, callback, timeout);
+        }
+
+        public IMessageBase<object> SendQuestion(string message, double timeout = 300)
+        {
+            return Client.SendQuestion(message, timeout);
+        }
+
+        public void SendQuestion(string message, Action<IMessageBase<object>> callback, double timeout = 300)
+        {
+            Client.SendQuestion(message, callback, timeout);
         }
     }
 }

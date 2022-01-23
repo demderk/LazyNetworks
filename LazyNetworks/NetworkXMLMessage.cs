@@ -25,6 +25,7 @@ namespace AdvancedTCP
                 XmlDocument document = new XmlDocument();
                 document.LoadXml(xmlCode);
                 XmlNode mainNode = document;
+                mainNode.Normalize();
                 MessageName = mainNode.Name;
                 MessageBody = mainNode;
             }

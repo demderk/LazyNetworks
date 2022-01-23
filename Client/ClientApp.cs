@@ -13,9 +13,10 @@ namespace ClientApp
             AdvancedTCPClient connection = new AdvancedTCPClient();
             while (true)
             {
-                if (!connection.TryConnect("192.168.31.74:10201"))
+                if (!connection.TryConnect("127.0.0.1:10201"))
                 {
                     Console.WriteLine("Connection failed. Retrying...");
+                    Thread.Sleep(3000);
                 }
                 else break;
             }
@@ -33,7 +34,7 @@ namespace ClientApp
                     {
                         var vnt = new AdvancedTCPClient();
                         vnt.Connect("127.0.0.1:10201");
-                        vnt.Client.Send("<string>Login</string>");
+                        vnt.Send("<string>Login</string>");
                         clients.Add(vnt);
                         Thread.Sleep(10);
                     }
@@ -41,14 +42,15 @@ namespace ClientApp
                 else if (cin == "c/stop")
                 {
                     connection.Disconnect();
-                    Console.WriteLine("Connection has been interrupted. Press any key for exit.");
+                    Console.WriteLine("Connection has been closed. Press any key for exit.");
                     Console.ReadKey();
                     return;
                 }
                 //connection.Send(cin);
                 if (true)
                 {
-                    IMessageBase<object> a = connection.Client.SendQuestion($"<string>{cin}</string>");
+                    IMessageBase<object> a = connection.SendQuestion($"<string>{cin}</string>");
+
                     switch (a)
                     {
                         case NetworkXMLMessage xmlmsg:
